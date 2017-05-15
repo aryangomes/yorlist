@@ -15,8 +15,7 @@ class CreateTableItems extends Migration
     {
         Schema::create('items', function (Blueprint $table) {
             $table->increments('idItem');
-            $table->float('price');
-            $table->boolean('isInCart')->default(0);
+            $table->string('name', 100);
             $table->timestamps();
         });
     }

@@ -16,6 +16,10 @@ class CreateTableListHasItems extends Migration
         Schema::create('list_has_items', function (Blueprint $table) {
             $table->integer('lists_idList')->unsigned();
             $table->integer('items_idItem')->unsigned();
+            $table->integer('qtd')->default(1);
+            $table->float('price')->default(0);
+            $table->boolean('isInCart')->default(0);
+            $table->float('subTotal')->default(0);
             $table->timestamps();
 
             $table->foreign('lists_idList')
