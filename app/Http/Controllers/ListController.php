@@ -15,8 +15,8 @@ class ListController extends Controller
      */
     public function index()
     {
-        dd(Auth::check());
-        $lists = ListModel::where('user_id',Auth::user())->all();
+
+        $lists = ListModel::where('user_id',Auth::id())->get()->all();
 
         return response()->json($lists);
     }

@@ -16,5 +16,15 @@ Route::get('/', function () {
 });
 
 Auth::routes();
+Route::group(['middleware' => 'auth'], function () {
+
+    Route::resource('lists', 'ListController');
+
+});
+
+
+
+Route::resource('items', 'ItemController');
+
 
 Route::get('/home', 'HomeController@index')->name('home');
