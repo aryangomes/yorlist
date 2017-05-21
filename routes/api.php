@@ -16,7 +16,14 @@ use Illuminate\Http\Request;
 
 $api = app('Dingo\Api\Routing\Router');
 
-$api->version('v1', function ($api) {
+$api->version('v1', ['middleware' => 'api.auth'], function ($api) {
+
+    $api->get('user', function () {
+        $user = app('Dingo\Api\Auth\Auth')->user();
+
+        return $user;
+    });
+
     $api->get('lists', '\App\Http\Controllers\Api\ListController@index');
 });
 

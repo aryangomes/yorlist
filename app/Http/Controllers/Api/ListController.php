@@ -17,8 +17,8 @@ class ListController extends Controller
     public function index()
     {
 
-//        $lists = ListModel::where('user_id', app('Dingo\Api\Auth\Auth')->user()->id)->get()->all();
-        $lists = ListModel::all();
+        $lists = ListModel::where('user_id', app('Dingo\Api\Auth\Auth')->user()->id)->get()->all();
+
 
         return response()->json($lists);
     }
