@@ -20,12 +20,16 @@ class CreateTableItems extends Migration
             $table->timestamps();
 
 
+
+        });
+
+        Schema::table('items', function (Blueprint $table) {
+
             $table->foreign('categories_idCategory')
                 ->references('idCategory')
                 ->on('categories')
                 ->onUpdate('cascade')
                 ->onDelete('cascade');
-
         });
 
 
