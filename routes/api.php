@@ -32,7 +32,23 @@ $api->version('v1', ['middleware' => 'api.auth'], function ($api) {
     $api->get('items/{id}', '\App\Http\Controllers\Api\ItemController@show');
     $api->patch('items/{id}', '\App\Http\Controllers\Api\ItemController@update');
     $api->delete('items/{id}', '\App\Http\Controllers\Api\ItemController@destroy');
+
+
+    //User
+    $api->patch('user', '\App\Http\Controllers\Api\UserController@update');
+    $api->delete('user', '\App\Http\Controllers\Api\UserController@destroy');
+
+
 });
 
+$api->version('v1', function ($api) {
+
+    //Register user
+    $api->post('register', '\App\Http\Controllers\Api\RegisterController@create');
+
+
+
+
+});
 
 
