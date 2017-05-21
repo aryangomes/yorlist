@@ -16,8 +16,19 @@ class CreateTableItems extends Migration
         Schema::create('items', function (Blueprint $table) {
             $table->increments('idItem');
             $table->string('name', 100);
+            $table->integer('categories_idCategory')->unsigned();
             $table->timestamps();
+
+
+            $table->foreign('categories_idCategory')
+                ->references('idCategory')
+                ->on('categories')
+                ->onUpdate('cascade')
+                ->onDelete('cascade');
+
         });
+
+
     }
 
     /**

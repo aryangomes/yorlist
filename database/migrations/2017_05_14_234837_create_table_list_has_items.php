@@ -20,6 +20,7 @@ class CreateTableListHasItems extends Migration
             $table->float('price')->default(0);
             $table->boolean('isInCart')->default(0);
             $table->float('subTotal')->default(0);
+            $table->string('unit',5)->default('uni');
             $table->timestamps();
 
             $table->foreign('lists_idList')
