@@ -18,16 +18,12 @@ $api = app('Dingo\Api\Routing\Router');
 
 $api->version('v1', ['middleware' => 'api.auth'], function ($api) {
 
-    $api->get('user', function () {
-        $user = app('Dingo\Api\Auth\Auth')->user();
-
-        return $user;
-    });
-
     $api->get('lists', '\App\Http\Controllers\Api\ListController@index');
+    $api->post('lists', '\App\Http\Controllers\Api\ListController@store');
+    $api->get('lists/{id}', '\App\Http\Controllers\Api\ListController@show');
+    $api->patch('lists/{id}', '\App\Http\Controllers\Api\ListController@update');
+    $api->delete('lists/{id}', '\App\Http\Controllers\Api\ListController@destroy');
 });
 
-/*Route::middleware('auth:api')->get('/user', function (Request $request) {
-    return $request->user();
-});*/
+
 

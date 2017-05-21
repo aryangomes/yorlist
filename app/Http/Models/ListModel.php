@@ -19,4 +19,6 @@ class ListModel extends Model
 
     protected $visible = ['idList','user_id','totalPrice','created_at','updated_at'];
 
+    protected $primaryKey = 'idList';
+
 }
