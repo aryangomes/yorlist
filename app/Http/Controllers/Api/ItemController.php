@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Models\ItemModel;
-use Illuminate\Http\Request;
+use App\Http\Requests\ItemRequest;
 
 class ItemController extends Controller
 {
@@ -15,9 +15,11 @@ class ItemController extends Controller
      */
     public function index()
     {
-        $lists = ItemModel::all();
 
-        return response()->json($lists);
+        $items = ItemModel::orderBy('categories_idCategory')->get()->all();
+
+
+        return response()->json($items);
     }
 
     /**
@@ -33,13 +35,15 @@ class ItemController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  \Illuminate\Http\Request $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(ItemRequest $request)
     {
         $list = new ItemModel();
+
         $list->fill($request->all());
+
         $list->save();
 
         return response()->json($list, 201);
@@ -48,16 +52,16 @@ class ItemController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
+     * @param  int $id
      * @return \Illuminate\Http\Response
      */
     public function show($id)
     {
-        $list = ItemModel::where('idItem',$id)->first();
+        $list = ItemModel::where('idItem', $id)->first();
 
-        if(!isset($list)) {
+        if (!isset($list)) {
             return response()->json([
-                'message'   => 'Record not found',
+                'message' => 'Record not found',
             ], 404);
         }
 
@@ -67,7 +71,7 @@ class ItemController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  int  $id
+     * @param  int $id
      * @return \Illuminate\Http\Response
      */
     public function edit($id)
@@ -78,23 +82,48 @@ class ItemController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
+     * @param  \Illuminate\Http\Request $request
+     * @param  int $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(ItemRequest $request, $id)
     {
-        //
+        $list = ItemModel::where('idItem', $id)->first();
+
+        if (!isset($list)) {
+            return response()->json([
+                'message' => 'Record not found',
+            ], 404);
+        }
+
+
+        $list->update($request->all());
+
+        return response()->json($list, 201);
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int  $id
+     * @param  int $id
      * @return \Illuminate\Http\Response
      */
     public function destroy($id)
     {
-        //
+
+        $list = ItemModel::findOrFail($id);
+
+        if (!isset($list)) {
+            return response()->json([
+                'message' => 'Record not found',
+            ], 404);
+        }
+
+
+        $list->delete();
+
+        return response()->json([
+            'message' => 'Record removed!',
+        ], 201);
     }
 }
