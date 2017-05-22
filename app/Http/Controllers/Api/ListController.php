@@ -3,10 +3,14 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Models\ItemModel;
+use App\Http\Models\ListHasItems;
 use App\Http\Models\ListModel;
+use App\Http\Requests\ListHasItemRequest;
 use App\Http\Requests\ListRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class ListController extends Controller
 {
@@ -19,7 +23,7 @@ class ListController extends Controller
     {
 
         $lists = ListModel::where('user_id', app('Dingo\Api\Auth\Auth')->user()->id)
-            ->orderBy('created_at','DESC')
+            ->orderBy('created_at', 'DESC')
             ->get()->all();
 
 
@@ -46,14 +50,26 @@ class ListController extends Controller
     {
         $list = new ListModel();
 
-        $request->request->add(['user_id'=>
-            app('Dingo\Api\Auth\Auth')->user()->id]);
+        DB::beginTransaction();
 
-        $list->fill($request->all());
+        try {
+            $request->merge(['user_id' =>
+                app('Dingo\Api\Auth\Auth')->user()->id]);
 
-        $list->save();
+            $list->fill($request->all());
 
-        return response()->json($list, 201);
+            $list->save();
+
+            ListModel::$ID_LIST_CURRENT = $list->idList;
+            DB::commit();
+            return response()->json($list, 201);
+        } catch (\Exception $e) {
+
+            DB::rollBack();
+
+            return response()->json($e->getMessage(), 501);
+
+        }
     }
 
     /**
@@ -131,6 +147,75 @@ class ListController extends Controller
 
         return response()->json([
             'message' => 'Record removed!',
-            ], 201);
+        ], 201);
+    }
+
+
+    /**
+     * Add a item in a list
+     * @param ListHasItemRequest $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function addItem(ListHasItemRequest $request)
+    {
+
+        $list = ListModel::where('idList', $request->all()['lists_idList'])->first();
+
+        $item = ItemModel::where('idItem', $request->all()['items_idItem'])->first();
+
+        if (!isset($list) && !isset($item)) {
+            return response()->json([
+                'message' => 'Record not found',
+            ], 404);
+        }
+
+        $listHasItem = new ListHasItems();
+
+        $subTotal = floatval($request->all()['price']) * floatval($request->all()['qtd']);
+
+        $request->merge(['subTotal' => $subTotal]);
+
+        $listHasItem->forceFill($request->all());
+
+        $listHasItem->save();
+
+        return response()->json([
+            'message' => 'Item added!',
+        ], 201);
+    }
+
+    /**
+     * Add a item in a list
+     * @param ListHasItemRequest $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function removeItem(Request $request)
+    {
+
+        $list = ListModel::where('idList', $request->all()['lists_idList'])->first();
+
+        $item = ItemModel::where('idItem', $request->all()['items_idItem'])->first();
+
+        if (!isset($list) && !isset($item)) {
+            return response()->json([
+                'message' => 'Record not found',
+            ], 404);
+        }
+
+        $listHasItem =  ListHasItems::where('items_idItem', $item->idItem)
+            ->where('lists_idList', $list->idList)
+            ->first();
+
+        if (!isset($listHasItem)) {
+            return response()->json([
+                'message' => 'Record not found',
+            ], 404);
+        }
+
+        $listHasItem->delete();
+
+        return response()->json([
+            'message' => 'Item removed!',
+        ], 201);
     }
 }

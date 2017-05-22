@@ -40,13 +40,13 @@ class ItemController extends Controller
      */
     public function store(ItemRequest $request)
     {
-        $list = new ItemModel();
+        $item = new ItemModel();
 
-        $list->fill($request->all());
+        $item->fill($request->all());
 
-        $list->save();
+        $item->save();
 
-        return response()->json($list, 201);
+        return response()->json($item, 201);
     }
 
     /**
@@ -57,15 +57,15 @@ class ItemController extends Controller
      */
     public function show($id)
     {
-        $list = ItemModel::where('idItem', $id)->first();
+        $item = ItemModel::where('idItem', $id)->first();
 
-        if (!isset($list)) {
+        if (!isset($item)) {
             return response()->json([
                 'message' => 'Record not found',
             ], 404);
         }
 
-        return response()->json($list);
+        return response()->json($item);
     }
 
     /**
@@ -88,18 +88,18 @@ class ItemController extends Controller
      */
     public function update(ItemRequest $request, $id)
     {
-        $list = ItemModel::where('idItem', $id)->first();
+        $item = ItemModel::where('idItem', $id)->first();
 
-        if (!isset($list)) {
+        if (!isset($item)) {
             return response()->json([
                 'message' => 'Record not found',
             ], 404);
         }
 
 
-        $list->update($request->all());
+        $item->update($request->all());
 
-        return response()->json($list, 201);
+        return response()->json($item, 201);
     }
 
     /**
@@ -111,16 +111,16 @@ class ItemController extends Controller
     public function destroy($id)
     {
 
-        $list = ItemModel::findOrFail($id);
+        $item = ItemModel::findOrFail($id);
 
-        if (!isset($list)) {
+        if (!isset($item)) {
             return response()->json([
                 'message' => 'Record not found',
             ], 404);
         }
 
 
-        $list->delete();
+        $item->delete();
 
         return response()->json([
             'message' => 'Record removed!',

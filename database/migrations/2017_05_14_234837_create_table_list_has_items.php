@@ -14,6 +14,7 @@ class CreateTableListHasItems extends Migration
     public function up()
     {
         Schema::create('list_has_items', function (Blueprint $table) {
+            $table->increments('idListHasItems');
             $table->integer('lists_idList')->unsigned();
             $table->integer('items_idItem')->unsigned();
             $table->integer('qtd')->default(1);

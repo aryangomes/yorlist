@@ -38,6 +38,9 @@ $api->version('v1', ['middleware' => 'api.auth'], function ($api) {
     $api->patch('user', '\App\Http\Controllers\Api\UserController@update');
     $api->delete('user', '\App\Http\Controllers\Api\UserController@destroy');
 
+    //ListHasItem
+    $api->post('lists/additem', '\App\Http\Controllers\Api\ListController@addItem');
+    $api->post('lists/removeitem', '\App\Http\Controllers\Api\ListController@removeItem');
 
 });
 
@@ -45,6 +48,7 @@ $api->version('v1', function ($api) {
 
     //Register user
     $api->post('register', '\App\Http\Controllers\Api\RegisterController@create');
+
 
 
 
