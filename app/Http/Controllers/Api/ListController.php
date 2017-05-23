@@ -171,39 +171,28 @@ class ListController extends Controller
 
         $listHasItem = new ListHasItems();
 
-        $subTotal = floatval($request->all()['price']) * floatval($request->all()['qtd']);
+        $subTotal = $this->calculateSubTotal($request->all()['price'],$request->all()['qtd']);
 
         $request->merge(['subTotal' => $subTotal]);
 
-        $listHasItem->forceFill($request->all());
+        $listHasItem->fill($request->all());
 
         $listHasItem->save();
 
         return response()->json([
-            'message' => 'Item added!',
+            'message' => 'Item added in list!',
         ], 201);
     }
 
     /**
-     * Add a item in a list
+     * Remove a item from a list
      * @param ListHasItemRequest $request
      * @return \Illuminate\Http\JsonResponse
      */
     public function removeItem(Request $request)
     {
 
-        $list = ListModel::where('idList', $request->all()['lists_idList'])->first();
-
-        $item = ItemModel::where('idItem', $request->all()['items_idItem'])->first();
-
-        if (!isset($list) && !isset($item)) {
-            return response()->json([
-                'message' => 'Record not found',
-            ], 404);
-        }
-
-        $listHasItem =  ListHasItems::where('items_idItem', $item->idItem)
-            ->where('lists_idList', $list->idList)
+        $listHasItem =  ListHasItems::where('idListHasItems',$request->all()['idListHasItems'])
             ->first();
 
         if (!isset($listHasItem)) {
@@ -215,7 +204,44 @@ class ListController extends Controller
         $listHasItem->delete();
 
         return response()->json([
-            'message' => 'Item removed!',
+            'message' => 'Item removed from list!',
         ], 201);
+    }
+
+    public function updateItemInList(ListHasItemRequest $request)
+    {
+
+        $listHasItem =  ListHasItems::where('idListHasItems',$request->all()['idListHasItems'])
+            ->first();
+
+        if (!isset($listHasItem)) {
+            return response()->json([
+                'message' => 'Record not found',
+            ], 404);
+        }
+
+        $subTotal = $this->calculateSubTotal($request->all()['price'],$request->all()['qtd']);
+
+        $request->merge(['subTotal' => $subTotal]);
+
+        $listHasItem->update($request->all());
+
+        $listHasItem->save();
+
+        return response()->json([
+            'message' => 'Item update in list!',
+        ], 201);
+    }
+
+    /**
+     * Calculates the subtotal of a item
+     * @param float $price
+     * @param int $qtd
+     * @return float
+     */
+    public function calculateSubTotal($price, $qtd=1)
+    {
+        $subTotal = floatval($price) * floatval($qtd);
+        return $subTotal;
     }
 }

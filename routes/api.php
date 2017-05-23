@@ -41,6 +41,7 @@ $api->version('v1', ['middleware' => 'api.auth'], function ($api) {
     //ListHasItem
     $api->post('lists/additem', '\App\Http\Controllers\Api\ListController@addItem');
     $api->post('lists/removeitem', '\App\Http\Controllers\Api\ListController@removeItem');
+    $api->put('lists/updateiteminlist', '\App\Http\Controllers\Api\ListController@updateItemInList');
 
 });
 
