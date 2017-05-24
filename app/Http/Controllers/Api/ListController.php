@@ -171,13 +171,15 @@ class ListController extends Controller
 
         $listHasItem = new ListHasItems();
 
-        $subTotal = $this->calculateSubTotal($request->all()['price'],$request->all()['qtd']);
+        $subTotal = ListHasItems::calculateSubTotal($request->all()['price'], $request->all()['qtd']);
 
         $request->merge(['subTotal' => $subTotal]);
 
         $listHasItem->fill($request->all());
 
         $listHasItem->save();
+
+        $list->calculateTotalPrice($subTotal, ListModel::$OPERATOR_SUM);
 
         return response()->json([
             'message' => 'Item added in list!',
@@ -192,7 +194,7 @@ class ListController extends Controller
     public function removeItem(Request $request)
     {
 
-        $listHasItem =  ListHasItems::where('idListHasItems',$request->all()['idListHasItems'])
+        $listHasItem = ListHasItems::where('idListHasItems', $request->all()['idListHasItems'])
             ->first();
 
         if (!isset($listHasItem)) {
@@ -200,6 +202,10 @@ class ListController extends Controller
                 'message' => 'Record not found',
             ], 404);
         }
+
+        $subTotal = ListHasItems::calculateSubTotal($listHasItem->price, $listHasItem->qtd);
+
+        $listHasItem->getList->calculateTotalPrice($subTotal, ListModel::$OPERATOR_SUBTRACT);
 
         $listHasItem->delete();
 
@@ -208,10 +214,15 @@ class ListController extends Controller
         ], 201);
     }
 
+    /**
+     * Update a item from a list
+     * @param ListHasItemRequest $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function updateItemInList(ListHasItemRequest $request)
     {
 
-        $listHasItem =  ListHasItems::where('idListHasItems',$request->all()['idListHasItems'])
+        $listHasItem = ListHasItems::where('idListHasItems', $request->all()['idListHasItems'])
             ->first();
 
         if (!isset($listHasItem)) {
@@ -220,9 +231,23 @@ class ListController extends Controller
             ], 404);
         }
 
-        $subTotal = $this->calculateSubTotal($request->all()['price'],$request->all()['qtd']);
+        $subTotal = ListHasItems::calculateSubTotal($request->all()['price'], $request->all()['qtd']);
 
         $request->merge(['subTotal' => $subTotal]);
+
+        if ($listHasItem->subTotal < $subTotal) {
+
+            $diferenca = $subTotal - $listHasItem->subTotal;
+
+            $listHasItem->getList->calculateTotalPrice($diferenca, ListModel::$OPERATOR_SUM);
+
+        } else {
+
+            $diferenca = $listHasItem->subTotal - $subTotal;
+
+            $listHasItem->getList->calculateTotalPrice($diferenca, ListModel::$OPERATOR_SUBTRACT);
+
+        }
 
         $listHasItem->update($request->all());
 
@@ -233,15 +258,4 @@ class ListController extends Controller
         ], 201);
     }
 
-    /**
-     * Calculates the subtotal of a item
-     * @param float $price
-     * @param int $qtd
-     * @return float
-     */
-    public function calculateSubTotal($price, $qtd=1)
-    {
-        $subTotal = floatval($price) * floatval($qtd);
-        return $subTotal;
-    }
 }
