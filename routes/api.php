@@ -24,6 +24,7 @@ $api->version('v1', ['middleware' => 'api.auth'], function ($api) {
     $api->get('lists/{id}', '\App\Http\Controllers\Api\ListController@show');
     $api->patch('lists/{id}', '\App\Http\Controllers\Api\ListController@update');
     $api->delete('lists/{id}', '\App\Http\Controllers\Api\ListController@destroy');
+    $api->post('lists/clone-list', '\App\Http\Controllers\Api\ListController@cloneList');
 
 
     //Items
@@ -32,6 +33,8 @@ $api->version('v1', ['middleware' => 'api.auth'], function ($api) {
     $api->get('items/{id}', '\App\Http\Controllers\Api\ItemController@show');
     $api->patch('items/{id}', '\App\Http\Controllers\Api\ItemController@update');
     $api->delete('items/{id}', '\App\Http\Controllers\Api\ItemController@destroy');
+    $api->post('items/search', '\App\Http\Controllers\Api\ItemController@search');
+    $api->post('items/search-by-category', '\App\Http\Controllers\Api\ItemController@searchByCategory');
 
 
     //User
@@ -49,9 +52,6 @@ $api->version('v1', function ($api) {
 
     //Register user
     $api->post('register', '\App\Http\Controllers\Api\RegisterController@create');
-
-
-
 
 
 });

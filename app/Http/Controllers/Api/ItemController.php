@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Models\ItemModel;
 use App\Http\Requests\ItemRequest;
+use Illuminate\Http\Request;
 
 class ItemController extends Controller
 {
@@ -17,7 +18,6 @@ class ItemController extends Controller
     {
 
         $items = ItemModel::orderBy('categories_idCategory')->get()->all();
-
 
         return response()->json($items);
     }
@@ -125,5 +125,41 @@ class ItemController extends Controller
         return response()->json([
             'message' => 'Record removed!',
         ], 201);
+    }
+
+
+    /**
+     * Search a item by name
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function search(Request $request)
+    {
+        $searchItem = ItemModel::where('name','like' , '%'. $request['name'] . '%')->get();
+
+        if (count($searchItem) <= 0) {
+            return response()->json([
+                'message' => 'Records not found',
+            ], 404);
+        }
+
+        return response()->json($searchItem);
+    }
+
+    /**
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function searchByCategory(Request $request)
+    {
+
+        $items = ItemModel::where('categories_idCategory',$request['idCategory'])->get()->all();
+
+        if (count($items) <= 0) {
+            return response()->json([
+                'message' => 'Records not found',
+            ], 404);
+        }
+
+        return response()->json($items);
     }
 }

@@ -258,4 +258,63 @@ class ListController extends Controller
         ], 201);
     }
 
+
+    /**
+     * Clone a list
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function cloneList(Request $request)
+    {
+
+        $list = ListModel::where('idList', $request->id)->first();
+
+        if (!isset($list)) {
+            return response()->json([
+                'message' => 'Record not found',
+            ], 404);
+        }
+
+        DB::beginTransaction();
+
+        try {
+
+            $newList = new ListModel();
+
+            $newList->fill([
+                'totalPrice' => $list->totalPrice,
+                'user_id' => $list->user_id
+            ]);
+
+            $newList->save();
+
+            foreach ($list->items as $item) {
+
+                $newListHasItem = new ListHasItems();
+
+                $newDataListHasItem = $item->toArray();
+
+                $newDataListHasItem = array_slice($newDataListHasItem, 1);
+
+                $newDataListHasItem["lists_idList"] = $newList->idList;
+
+                $newListHasItem->fill($newDataListHasItem);
+
+                $newListHasItem->save();
+            }
+
+            DB::commit();
+
+            return response()->json($newList, 201);
+
+        } catch (\Exception $e) {
+
+            DB::rollBack();
+
+            return response()->json($e->getMessage(), 501);
+
+        }
+
+    }
+
 }
