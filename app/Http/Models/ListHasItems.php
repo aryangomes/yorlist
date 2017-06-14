@@ -11,9 +11,9 @@ class ListHasItems extends Model
 
     protected $table = 'list_has_items';
 
-    protected $fillable = ['idListHasItems', 'lists_idList', 'items_idItem', 'price', 'isInCart', 'qtd', 'subTotal', 'unit', 'created_at', 'updated_at'];
+    protected $fillable = ['idListHasItems', 'lists_idList', 'items_idItem', 'price', 'isInCart', 'qtd', 'subTotal', 'unit', 'created_at', 'updated_at','item'];
 
-    protected $visible = ['idListHasItems', 'lists_idList', 'items_idItem', 'price', 'isInCart', 'qtd', 'subTotal', 'unit', 'created_at', 'updated_at'];
+    protected $visible = ['idListHasItems', 'lists_idList', 'items_idItem', 'price', 'isInCart', 'qtd', 'subTotal', 'unit', 'created_at', 'updated_at', 'item'];
 
 
     /**

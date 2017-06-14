@@ -19,5 +19,8 @@ Vue.use(require('vue-resource'));
 
 
 const app = new Vue({
-    el: '#app'
+    el: '#app',
+    data:{
+        selected:'',
+    },
 });

@@ -22,7 +22,7 @@ class ListController extends Controller
     public function index()
     {
 
-        $lists = ListModel::where('user_id', app('Dingo\Api\Auth\Auth')->user()->id)
+        $lists = ListModel::where('user_id', ListModel::$USER_ID)
             ->orderBy('created_at', 'DESC')
             ->get()->all();
 
@@ -54,7 +54,7 @@ class ListController extends Controller
 
         try {
             $request->merge(['user_id' =>
-                app('Dingo\Api\Auth\Auth')->user()->id]);
+                ListModel::$USER_ID]);
 
             $list->fill($request->all());
 
@@ -315,6 +315,25 @@ class ListController extends Controller
 
         }
 
+    }
+
+    public function items($id)
+    {
+        $list = ListHasItems::where('lists_idList', $id)->get();
+
+        if (!isset($list)) {
+            return response()->json([
+                'message' => 'Record not found',
+            ], 404);
+        }
+
+        $items = [];
+        foreach ($list as $item){
+            array_push($items,$item->item);
+        }
+
+
+        return response()->json([$list,$items]);
     }
 
 }

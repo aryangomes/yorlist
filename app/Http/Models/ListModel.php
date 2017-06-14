@@ -15,6 +15,8 @@ class ListModel extends Model
 
     public static $ID_LIST_CURRENT = 0;
 
+    public static $USER_ID = 1;
+
     protected $table = 'lists';
 
     protected $fillable = ['idList', 'user_id', 'totalPrice', 'created_at', 'updated_at'];

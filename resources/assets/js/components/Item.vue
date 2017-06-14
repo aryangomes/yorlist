@@ -2,9 +2,11 @@
     <div class="container">
 
         <div class="row">
-            <li>
-                {{ todos.totalPrice }}
+            <li v-for="(item, index) in items">
+               Name: {{ items[1][index].name}}
+                Price:{{ items[0][index].price}}
             </li>
+
         </div>
     </div>
 </template>
@@ -13,20 +15,21 @@
     export default {
         name: 'yor-item',
         props: {
-            todos: {
+            items: {
                 default: ()=> {
-                    return 0;
+                    return [];
                 }
             },
 
         },
 
-        methods: {
+
+        computed: {
             getItems: function () {
 
-                this.$http.get('/lists/1').then(response => {
+                this.$http.get('/lists/1/items').then(response => {
                     console.log(response.body);
-                 this.todos = response.body;
+                    this.items = response.body;
 
                 }, response => {
                     console.log('error');
@@ -34,14 +37,8 @@
             }
         },
 
-        computed: {
-            listJson: function(){
-                return JSON.parse(this.list);
-            }
-        },
-
         mounted() {
-          this.getItems();
+            this.getItems;
 
         }
     }

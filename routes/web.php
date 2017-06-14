@@ -25,7 +25,7 @@ Route::get('lists/{id}', '\App\Http\Controllers\Api\ListController@show');
 Route::patch('lists/{id}', '\App\Http\Controllers\Api\ListController@update');
 Route::delete('lists/{id}', '\App\Http\Controllers\Api\ListController@destroy');
 Route::post('lists/clone-list', '\App\Http\Controllers\Api\ListController@cloneList');
-
+Route::get('lists/{id}/items', '\App\Http\Controllers\Api\ListController@items');
 
 //Items
 Route::get('items', '\App\Http\Controllers\Api\ItemController@index');
