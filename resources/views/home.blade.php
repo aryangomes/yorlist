@@ -1,15 +1,16 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container">
+<div id="app" class="container">
     <div class="row">
         <div class="col-md-8 col-md-offset-2">
             <div class="panel panel-default">
                 <div class="panel-heading">Dashboard</div>
+                <yor-list >
 
-                <div class="panel-body">
-                    You are logged in!
-                </div>
+
+                </yor-list>
+                <yor-item></yor-item>
             </div>
         </div>
     </div>
