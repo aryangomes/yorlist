@@ -5,6 +5,7 @@
             <li v-for="(item, index) in items">
                Name: {{ items[1][index].name}}
                 Price:{{ items[0][index].price}}
+
             </li>
 
         </div>
@@ -12,33 +13,39 @@
 </template>
 
 <script>
+
+
     export default {
+
         name: 'yor-item',
-        props: {
-            items: {
-                default: ()=> {
-                    return [];
-                }
-            },
-
-        },
-
+        props: ['items','value'],
 
         computed: {
-            getItems: function () {
 
-                this.$http.get('/lists/1/items').then(response => {
-                    console.log(response.body);
+            getItems: function () {
+                this.item = this.$parent.items;
+            }
+           /* getItems: function () {
+
+                this.$http.get('/lists/'+`${this.$store.state.idList}`+'/items').then(response => {
+
                     this.items = response.body;
 
                 }, response => {
                     console.log('error');
                 });
-            }
+
+//                console.log('idList:: '+this.$store.state.idList);
+            },*/
+            /*list () {
+
+                return `List: ${this.$store.state.idList}`
+            },*/
+
         },
 
         mounted() {
-            this.getItems;
+//            this.getItems
 
         }
     }

@@ -10,7 +10,8 @@
 
 
                 </yor-list>
-                <yor-item></yor-item>
+
+
             </div>
         </div>
     </div>

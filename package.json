@@ -27,6 +27,7 @@
     "vue-material": "^0.7.1",
     "vue-style-loader": "^3.0.1",
     "vuejs-datepicker": "^0.7.11",
+    "vuex": "^2.3.1",
     "webpack": "^2.5.0"
   }
 }

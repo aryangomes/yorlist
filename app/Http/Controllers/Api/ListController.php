@@ -22,7 +22,7 @@ class ListController extends Controller
     public function index()
     {
 
-        $lists = ListModel::where('user_id', ListModel::$USER_ID)
+        $lists = ListModel::where('user_id', Auth::id())
             ->orderBy('created_at', 'DESC')
             ->get()->all();
 
@@ -54,7 +54,7 @@ class ListController extends Controller
 
         try {
             $request->merge(['user_id' =>
-                ListModel::$USER_ID]);
+                Auth::id()]);
 
             $list->fill($request->all());
 
@@ -333,7 +333,7 @@ class ListController extends Controller
         }
 
 
-        return response()->json([$list,$items]);
+        return response()->json($list);
     }
 
 }
