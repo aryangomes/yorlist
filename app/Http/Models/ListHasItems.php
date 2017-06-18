@@ -11,9 +11,9 @@ class ListHasItems extends Model
 
     protected $table = 'list_has_items';
 
-    protected $fillable = ['idListHasItems', 'lists_idList', 'items_idItem', 'price', 'isInCart', 'qtd', 'subTotal', 'unit', 'created_at', 'updated_at','item'];
+    protected $fillable = ['idListHasItems', 'lists_idList', 'items_idItem', 'price', 'isInCart', 'qtd', 'subTotal', 'unit', 'created_at', 'updated_at','item', 'getList'];
 
-    protected $visible = ['idListHasItems', 'lists_idList', 'items_idItem', 'price', 'isInCart', 'qtd', 'subTotal', 'unit', 'created_at', 'updated_at', 'item'];
+    protected $visible = ['idListHasItems', 'lists_idList', 'items_idItem', 'price', 'isInCart', 'qtd', 'subTotal', 'unit', 'created_at', 'updated_at', 'item','getList'];
 
 
     /**
@@ -25,6 +25,7 @@ class ListHasItems extends Model
     public static function calculateSubTotal($price, $qtd = 1)
     {
         $subTotal = floatval($price) * floatval($qtd);
+
         return $subTotal;
     }
 

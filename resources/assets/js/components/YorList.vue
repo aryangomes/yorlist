@@ -2,16 +2,20 @@
 <template>
     <div class="container">
         <div class="row">
-            <select @change="changeList" v-model="value">
-                <option v-for="list in lists" :value="list.idList">
-                    {{ list.created_at }}
+            <select  v-model="list"  :value="lista" >
+                <option v-for="lista in lists" :value="lista">
+                    {{ lista.created_at }}
                 </option>
             </select>
-            <span>Selected: {{ value }}</span>
-            <li v-for="item in items">
-                <yor-item v-bind:item="item"></yor-item>
+            <span>Selected: {{ lista.totalPrice }}</span>
 
-            </li>
+
+            <span v-for="item in itemsHasList">
+                <yor-item v-bind:itemHasItem="item"></yor-item>
+
+            </span>
+
+            <button @click="saveList()">Save List</button>
         </div>
     </div>
 </template>
@@ -27,34 +31,58 @@
         data:function () {
             return {
                 lists:[],
-                value:'',
-                items:[],
-                idList:''
+                list:{},
+                lista:{},
+                itemsHasList:[],
+                selected:{}
             }
         },
 
         methods:{
-            changeList: function(){
 
-                this.$http.get('/lists/'+this.value+'/items').then(response => {
-                    this.items = response.body;
-                    console.log( this.items);
+
+            saveList:function () {
+                
+                var idList = this.list.idList;
+                this.$http.put('api/listhasitems',
+                        {data:this.itemsHasList}
+
+                        ).then(response => {
+
+                    this.lista = response.body[0].get_list;
+                    console.log(this.lista);
+
                 }, response => {
                     console.log('error');
                 });
             },
+            getLists:function () {
+                this.$http.get('api/lists').then(response => {
+
+                    this.lists = response.body;
+
+                }, response => {
+                    console.log('error');
+                });
+            }
+
 
         },
 
+        watch: {
+            list:function (selected) {
+                this.$http.get('api/lists/'+selected.idList+'/items').then(response => {
+                    this.itemsHasList = response.body;
+                    this.lista = response.body[0].get_list;
+
+                }, response => {
+                    console.log('error');
+                });
+            }
+        },
 
         mounted() {
-            this.$http.get('/lists').then(response => {
-
-                this.lists = response.body;
-
-            }, response => {
-                console.log('error');
-            });
+            this.getLists();
         }
 
     }

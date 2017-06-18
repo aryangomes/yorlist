@@ -219,43 +219,43 @@ class ListController extends Controller
      * @param ListHasItemRequest $request
      * @return \Illuminate\Http\JsonResponse
      */
-    public function updateItemInList(ListHasItemRequest $request)
+    public function updateItemInList(Request $request)
     {
+            dd($request->all()['data']);
+          $listHasItem = ListHasItems::where('idListHasItems', $request->all()['idListHasItems'])
+              ->first();
 
-        $listHasItem = ListHasItems::where('idListHasItems', $request->all()['idListHasItems'])
-            ->first();
+          if (!isset($listHasItem)) {
+              return response()->json([
+                  'message' => 'Record not found',
+              ], 404);
+          }
 
-        if (!isset($listHasItem)) {
-            return response()->json([
-                'message' => 'Record not found',
-            ], 404);
-        }
+          $subTotal = ListHasItems::calculateSubTotal($request->all()['price'], $request->all()['qtd']);
 
-        $subTotal = ListHasItems::calculateSubTotal($request->all()['price'], $request->all()['qtd']);
+          $request->merge(['subTotal' => $subTotal]);
 
-        $request->merge(['subTotal' => $subTotal]);
+          if ($listHasItem->subTotal < $subTotal) {
 
-        if ($listHasItem->subTotal < $subTotal) {
+              $diferenca = $subTotal - $listHasItem->subTotal;
 
-            $diferenca = $subTotal - $listHasItem->subTotal;
+              $listHasItem->getList->calculateTotalPrice($diferenca, ListModel::$OPERATOR_SUM);
 
-            $listHasItem->getList->calculateTotalPrice($diferenca, ListModel::$OPERATOR_SUM);
+          } else {
 
-        } else {
+              $diferenca = $listHasItem->subTotal - $subTotal;
 
-            $diferenca = $listHasItem->subTotal - $subTotal;
+              $listHasItem->getList->calculateTotalPrice($diferenca, ListModel::$OPERATOR_SUBTRACT);
 
-            $listHasItem->getList->calculateTotalPrice($diferenca, ListModel::$OPERATOR_SUBTRACT);
+          }
 
-        }
+          $listHasItem->update($request->all());
 
-        $listHasItem->update($request->all());
+          $listHasItem->save();
 
-        $listHasItem->save();
-
-        return response()->json([
-            'message' => 'Item update in list!',
-        ], 201);
+          return response()->json([
+              'message' => 'Item update in list!',
+          ], 201);
     }
 
 
@@ -319,21 +319,24 @@ class ListController extends Controller
 
     public function items($id)
     {
-        $list = ListHasItems::where('lists_idList', $id)->get();
+        $listHasItems = ListHasItems::where('lists_idList', $id)->get();
 
-        if (!isset($list)) {
+        if (!isset($listHasItems)) {
             return response()->json([
                 'message' => 'Record not found',
             ], 404);
         }
 
         $items = [];
-        foreach ($list as $item){
+        foreach ($listHasItems as $item){
+
             array_push($items,$item->item);
+
+            $list = $item->getList;
         }
 
 
-        return response()->json($list);
+        return response()->json($listHasItems);
     }
 
 }
