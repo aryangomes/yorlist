@@ -9,8 +9,8 @@
             <span>Selected: {{ lista.totalPrice }}</span>
 
 
-            <span v-for="item in itemsHasList">
-                <yor-item v-bind:itemHasItem="item"></yor-item>
+            <span v-for="(item,index) in itemsHasList">
+                <yor-item v-bind:itemHasItem="item"></yor-item>  <button @click="removeItemFromList(item,index)">Remove Item From List</button>
 
             </span>
             <button @click="addItemInList()">Add New Item In List</button>
@@ -49,6 +49,21 @@
                 this.itemsHasList[this.itemsHasList.length - 1] = Object.assign({}, this.itemsHasList[this.itemsHasList.length - 2]);
 
                 this.itemsHasList[this.itemsHasList.length - 1].idListHasItems = null;
+            },
+
+            removeItemFromList:function (item,index) {
+              console.log(item);
+                console.log(index);
+                this.$http.post('api/lists/removeitem',
+                        {data: item}
+                ).then(response => {
+
+                    this.itemsHasList.splice(index,1);
+                    console.log(index);
+                    console.log(this.itemsHasList);
+                }, response => {
+                    console.log('error');
+                });
             },
 
             saveList: function () {

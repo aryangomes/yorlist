@@ -194,7 +194,7 @@ class ListController extends Controller
     public function removeItem(Request $request)
     {
 
-        $listHasItem = ListHasItems::where('idListHasItems', $request->all()['idListHasItems'])
+        $listHasItem = ListHasItems::where('idListHasItems', $request->all()['data']['idListHasItems'])
             ->first();
 
         if (!isset($listHasItem)) {
