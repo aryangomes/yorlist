@@ -24,28 +24,39 @@ class ListHasItemController extends Controller
             $totalPrice = 0;
 
             foreach ($data as $item) {
-                $listHasItem = ListHasItems::where('idListHasItems', $item['idListHasItems'])
-                    ->first();
-
                 $subTotal = ListHasItems::calculateSubTotal($item['price'], $item['qtd']);
 
-                $listHasItem->update([
-                    'items_idItem' => $item['items_idItem'],
-                    'qtd' => $item['qtd'],
-                    'price' => $item['price'],
-                    'isInCart' => $item['isInCart'],
-                    'unit' => $item['unit'],
-                    'subTotal' => $subTotal,
-                ]);
+                if (isset($item['idListHasItems'])) {
+                    $listHasItem = ListHasItems::where('idListHasItems', $item['idListHasItems'])
+                        ->first();
+                    $listHasItem->update([
+                        'items_idItem' => $item['items_idItem'],
+                        'qtd' => $item['qtd'],
+                        'price' => $item['price'],
+                        'isInCart' => $item['isInCart'],
+                        'unit' => $item['unit'],
+                        'subTotal' => $subTotal,
+                    ]);
+                } else {
+                    $listHasItem = ListHasItems::firstOrCreate([
+                        'items_idItem' => $item['items_idItem'],
+                        'lists_idList' => $item['lists_idList'],
+                        'qtd' => $item['qtd'],
+                        'price' => $item['price'],
+                        'isInCart' => $item['isInCart'],
+                        'unit' => $item['unit'],
+                        'subTotal' => $subTotal,
+                    ]);
+                }
 
                 $totalPrice += $subTotal;
 
             }
 
-            $list = ListModel::where('idList','=', $data[0]['lists_idList'])->first();
+            $list = ListModel::where('idList', '=', $data[0]['lists_idList'])->first();
 
             $list->update(
-                ['totalPrice'=>$totalPrice]
+                ['totalPrice' => $totalPrice]
             );
 
             DB::commit();
@@ -55,12 +66,12 @@ class ListHasItemController extends Controller
             DB::rollBack();
 
             return response()->json([
-                'message' => 'Error.: '.$exception->getMessage(),
+                'message' => 'Error.: ' . $exception->getMessage(),
             ], 504);
         }
 
 
-        $listHasItem = ListHasItems::where('lists_idList','=', $data[0]['lists_idList'])->get();
+        $listHasItem = ListHasItems::where('lists_idList', '=', $data[0]['lists_idList'])->get();
 
         if (!isset($listHasItem)) {
 
@@ -77,8 +88,6 @@ class ListHasItemController extends Controller
             array_push($items, $item->item);
             $list = $item->getList;
         }
-
-
 
 
         return response()->json($listHasItem, 201);

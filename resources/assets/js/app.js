@@ -28,8 +28,13 @@ const app = new Vue({
 
     components:{
         YorList, YorItem
-    }
+    },
 
 
+    data:function () {
+      return {
+
+      }
+    },
 
 });

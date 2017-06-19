@@ -1,8 +1,7 @@
-
 <template>
     <div class="container">
         <div class="row">
-            <select  v-model="list"  :value="lista" >
+            <select v-model="list" :value="lista">
                 <option v-for="lista in lists" :value="lista">
                     {{ lista.created_at }}
                 </option>
@@ -14,7 +13,7 @@
                 <yor-item v-bind:itemHasItem="item"></yor-item>
 
             </span>
-
+            <button @click="addItemInList()">Add New Item In List</button>
             <button @click="saveList()">Save List</button>
         </div>
     </div>
@@ -25,38 +24,48 @@
     export default {
         name: 'yor-list',
 
-        components:{
+        components: {
             YorItem
         },
-        data:function () {
+        prop: {
+            list: Object,
+        },
+        data: function () {
             return {
-                lists:[],
-                list:{},
-                lista:{},
-                itemsHasList:[],
-                selected:{}
+                lists: [],
+                list: {},
+                lista: {},
+                itemsHasList: [],
+                selected: {},
+
             }
         },
 
-        methods:{
+        methods: {
+            addItemInList: function () {
 
+                this.itemsHasList.push(YorItem.itemHasItem);
 
-            saveList:function () {
-                
-                var idList = this.list.idList;
+                this.itemsHasList[this.itemsHasList.length - 1] = Object.assign({}, this.itemsHasList[this.itemsHasList.length - 2]);
+
+                this.itemsHasList[this.itemsHasList.length - 1].idListHasItems = null;
+            },
+
+            saveList: function () {
+
                 this.$http.put('api/listhasitems',
-                        {data:this.itemsHasList}
+                        {data: this.itemsHasList}
+                ).then(response => {
 
-                        ).then(response => {
-
-                    this.lista = response.body[0].get_list;
+                    this.lista = this.list;
+                    this.itemsHasList = response.body;
                     console.log(this.lista);
 
                 }, response => {
                     console.log('error');
                 });
             },
-            getLists:function () {
+            getLists: function () {
                 this.$http.get('api/lists').then(response => {
 
                     this.lists = response.body;
@@ -70,10 +79,13 @@
         },
 
         watch: {
-            list:function (selected) {
-                this.$http.get('api/lists/'+selected.idList+'/items').then(response => {
+            list: function (selected) {
+                this.$http.get('api/lists/' + selected.idList + '/items').then(response => {
+
                     this.itemsHasList = response.body;
-                    this.lista = response.body[0].get_list;
+
+                    this.lista = selected;
+
 
                 }, response => {
                     console.log('error');
