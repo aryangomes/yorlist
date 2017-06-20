@@ -1,19 +1,19 @@
 <template>
 
     <li class="container">
-        <select v-model="itemHasItem.items_idItem">
+        <select v-model="itemHasList.items_idItem">
             <option v-for="item in items" :value="item.idItem">
                 {{ item.name}}
             </option>
         </select>
 
-        qtd: <input type="number" id="qtd" name="qtd" v-model="itemHasItem.qtd"/>
+        qtd: <input @keyup="updateSubTotal()" type="number" id="qtd" name="qtd" v-model="itemHasList.qtd"/>
 
-        Price: <input type="number" id="price" name="price" v-model="itemHasItem.price"/>
+        Price: <input @keyup="updateSubTotal()" type="number" id="price" name="price" v-model="itemHasList.price"/>
 
-        <input type="hidden" id="lists_idList" name="lists_idList" v-model="itemHasItem.lists_idList"/>
+        <input type="hidden" id="lists_idList" name="lists_idList" v-model="itemHasList.lists_idList"/>
 
-        isInCart: <select v-model="itemHasItem.isInCart">
+        isInCart: <select v-model="itemHasList.isInCart">
 
         <option :value="0">
             Não
@@ -23,9 +23,11 @@
         </option>
     </select>
 
-        subTotal: <input type="text" id="subTotal" name="subTotal" v-model="itemHasItem.subTotal"/>
+        subTotal: <span  id="subTotal" name="subTotal">
+            {{itemHasList.subTotal}}
+        </span>
 
-        Unit: <select v-model="itemHasItem.unit">
+        Unit: <select v-model="itemHasList.unit">
         <option value="unid">
             Uni.
         </option>
@@ -44,7 +46,7 @@
 
         name: 'yor-item',
         props: {
-            itemHasItem: {
+            itemHasList: {
                 type:Object,
                 default: function () {
                     return {
@@ -61,7 +63,14 @@
 
             }
         },
-        methods: {},
+        methods: {
+            updateSubTotal:function () {
+
+                this.itemHasList.subTotal = this.itemHasList.price * this.itemHasList.qtd;
+
+            }
+
+        },
 
         mounted() {
             console.log(this.list);
@@ -72,6 +81,10 @@
             }, response => {
                 console.log('error');
             });
+        },
+
+        computed:{
+
         }
 
 

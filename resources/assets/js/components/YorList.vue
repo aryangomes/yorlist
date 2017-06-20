@@ -12,7 +12,7 @@
             <button @click="deleteList()">Delete List</button>
 
             <span v-for="(item,index) in itemsHasList">
-                <yor-item v-bind:itemHasItem="item"></yor-item>  <button @click="removeItemFromList(item,index)">Remove Item From List</button>
+                <yor-item v-bind:itemHasList="item"></yor-item>  <button @click="removeItemFromList(item,index)">Remove Item From List</button>
 
             </span>
             <button @click="addItemInList()">Add New Item In List</button>
@@ -46,11 +46,25 @@
         methods: {
             addItemInList: function () {
 
-                this.itemsHasList.push(YorItem.itemHasItem);
+                this.itemsHasList.push(YorItem.itemHasList);
 
-                this.itemsHasList[this.itemsHasList.length - 1] = Object.assign({}, this.itemsHasList[this.itemsHasList.length - 2]);
+                this.itemsHasList[this.itemsHasList.length - 1] = YorItem;
 
                 this.itemsHasList[this.itemsHasList.length - 1].idListHasItems = null;
+
+                this.itemsHasList[this.itemsHasList.length - 1].lists_idList = this.list.idList;
+
+                this.itemsHasList[this.itemsHasList.length - 1].price = 0;
+
+                this.itemsHasList[this.itemsHasList.length - 1].qtd = 0;
+
+                this.itemsHasList[this.itemsHasList.length - 1].items_idItem = 0;
+
+                this.itemsHasList[this.itemsHasList.length - 1].isInCart = -1;
+
+                this.itemsHasList[this.itemsHasList.length - 1].subTotal = 0;
+
+                this.itemsHasList[this.itemsHasList.length - 1].unit = 0;
             },
 
             removeItemFromList: function (item, index) {
@@ -132,7 +146,9 @@
 
         mounted() {
             this.getLists();
-        }
+        },
+
+
 
     }
 
