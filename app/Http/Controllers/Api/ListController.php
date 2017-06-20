@@ -46,22 +46,21 @@ class ListController extends Controller
      * @param  \Illuminate\Http\Request $request
      * @return \Illuminate\Http\Response
      */
-    public function store(ListRequest $request)
+    public function store()
     {
         $list = new ListModel();
 
         DB::beginTransaction();
 
         try {
-            $request->merge(['user_id' =>
+
+            $list->create(['user_id' =>
                 Auth::id()]);
 
-            $list->fill($request->all());
-
-            $list->save();
-
             ListModel::$ID_LIST_CURRENT = $list->idList;
+
             DB::commit();
+
             return response()->json($list, 201);
         } catch (\Exception $e) {
 

@@ -1,13 +1,15 @@
 <template>
     <div class="container">
         <div class="row">
-            <select v-model="list" :value="lista">
-                <option v-for="lista in lists" :value="lista">
-                    {{ lista.created_at }}
+            <select v-model="list" :value="listModel">
+                <option v-for="listModel in lists" :value="listModel">
+                    {{ listModel.created_at }}
                 </option>
             </select>
-            <span>Selected: {{ lista.totalPrice }}</span>
+            <span>Price Total: {{ listModel.totalPrice }}</span>
 
+            <button @click="createNewList()">Create New List</button>
+            <button @click="deleteList()">Delete List</button>
 
             <span v-for="(item,index) in itemsHasList">
                 <yor-item v-bind:itemHasItem="item"></yor-item>  <button @click="removeItemFromList(item,index)">Remove Item From List</button>
@@ -34,7 +36,7 @@
             return {
                 lists: [],
                 list: {},
-                lista: {},
+                listModel: {},
                 itemsHasList: [],
                 selected: {},
 
@@ -51,18 +53,16 @@
                 this.itemsHasList[this.itemsHasList.length - 1].idListHasItems = null;
             },
 
-            removeItemFromList:function (item,index) {
-              console.log(item);
-                console.log(index);
+            removeItemFromList: function (item, index) {
+
                 this.$http.post('api/lists/removeitem',
                         {data: item}
                 ).then(response => {
 
-                    this.itemsHasList.splice(index,1);
-                    console.log(index);
-                    console.log(this.itemsHasList);
+                    this.itemsHasList.splice(index, 1);
+
                 }, response => {
-                    console.log('error');
+                    console.log(response.body);
                 });
             },
 
@@ -72,23 +72,45 @@
                         {data: this.itemsHasList}
                 ).then(response => {
 
-                    this.lista = this.list;
+                    this.listModel = this.list;
                     this.itemsHasList = response.body;
-                    console.log(this.lista);
+                    console.log(this.listModel);
 
                 }, response => {
-                    console.log('error');
+                    console.log(response.body);
                 });
             },
+
             getLists: function () {
                 this.$http.get('api/lists').then(response => {
 
                     this.lists = response.body;
 
                 }, response => {
-                    console.log('error');
+                    console.log(response.body);
                 });
-            }
+            },
+
+            createNewList: function () {
+                this.$http.post('api/lists').then(response => {
+
+                    this.getLists();
+
+                }, response => {
+                    console.log(response.body);
+                });
+            },
+
+            deleteList: function () {
+                console.log(this.listModel.idList);
+                this.$http.delete('api/lists/' + this.listModel.idList).then(response => {
+
+                    this.getLists();
+
+                }, response => {
+                    console.log(response.body);
+                });
+            },
 
 
         },
@@ -99,11 +121,11 @@
 
                     this.itemsHasList = response.body;
 
-                    this.lista = selected;
+                    this.listModel = selected;
 
 
                 }, response => {
-                    console.log('error');
+                    console.log(response.body);
                 });
             }
         },
