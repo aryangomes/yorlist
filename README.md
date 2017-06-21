@@ -1,1 +1,1 @@
-yorlist
+A project Laravel + Vue 2 of a list of shopping
