@@ -2,6 +2,9 @@
 
     <li class="container">
         <select v-model="itemHasList.items_idItem">
+            <option value="0" >
+                Select a item
+            </option>
             <option v-for="item in items" :value="item.idItem">
                 {{ item.name}}
             </option>
@@ -15,6 +18,9 @@
 
         isInCart: <select v-model="itemHasList.isInCart">
 
+        <option value="-1">
+            Select if item has in cart
+        </option>
         <option :value="0">
             Não
         </option>
@@ -23,11 +29,14 @@
         </option>
     </select>
 
-        subTotal: <span  id="subTotal" name="subTotal">
+        subTotal: <span id="subTotal" name="subTotal">
             {{itemHasList.subTotal}}
         </span>
 
         Unit: <select v-model="itemHasList.unit">
+        <option value="0" >
+            Select the unit
+        </option>
         <option value="unid">
             Uni.
         </option>
@@ -47,33 +56,50 @@
         name: 'yor-item',
         props: {
             itemHasList: {
-                type:Object,
+                type: Object,
                 default: function () {
                     return {
                         price:0,
-                        lists_idList:0
+                        lists_idList:0,
+                        items_idItem:0,
+                        isInCart:0,
+                        subTotal:0,
+                        qtd:1,
+                        unit:'unid',
+                        idListHasItems:0,
                     }
-                }
+                },
+                required:true
             }
         },
         data: function () {
             return {
                 items: [],
-                list: {}
+                list: {},
+
 
             }
         },
         methods: {
-            updateSubTotal:function () {
+            updateSubTotal: function () {
 
                 this.itemHasList.subTotal = this.itemHasList.price * this.itemHasList.qtd;
+
+                var totalPrice = 0;
+
+                this.$parent.itemsHasList.forEach(function (item) {
+
+                    totalPrice += item.subTotal;
+
+                });
+
+                this.$parent.list.totalPrice = totalPrice;
 
             }
 
         },
 
         mounted() {
-            console.log(this.list);
             this.$http.get('api/items').then(response => {
 
                 this.items = response.body;
@@ -81,10 +107,6 @@
             }, response => {
                 console.log('error');
             });
-        },
-
-        computed:{
-
         }
 
 

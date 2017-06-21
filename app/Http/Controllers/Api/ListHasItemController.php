@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Models\ItemModel;
 use App\Http\Models\ListHasItems;
 use App\Http\Models\ListModel;
 use App\Http\Requests\ListHasItemRequest;
@@ -93,4 +94,6 @@ class ListHasItemController extends Controller
         return response()->json($listHasItem, 201);
 
     }
+
+
 }

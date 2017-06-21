@@ -32,18 +32,20 @@ Route::prefix('api')->group(function () {
     Route::get('lists/{id}/items', '\App\Http\Controllers\Api\ListController@items');
 
     //ListHasItem
+
     Route::post('lists/additem', '\App\Http\Controllers\Api\ListController@addItem');
     Route::post('lists/removeitem', '\App\Http\Controllers\Api\ListController@removeItem');
     Route::put('lists/updateiteminlist', '\App\Http\Controllers\Api\ListController@updateItemInList');
     Route::resource('lists', '\App\Http\Controllers\Api\ListController');
+    Route::put('listhasitems',['as'=> 'api.listhasitems.update' , 'uses' =>'\App\Http\Controllers\Api\ListHasItemController@update']);
 
     //Items
-    Route::resource('items', '\App\Http\Controllers\Api\ItemController');
 
+    Route::resource('items', '\App\Http\Controllers\Api\ItemController');
     Route::post('items/search', '\App\Http\Controllers\Api\ItemController@search');
     Route::post('items/search-by-category', '\App\Http\Controllers\Api\ItemController@searchByCategory');
 
-    Route::put('listhasitems',['as'=> 'api.listhasitems.update' , 'uses' =>'\App\Http\Controllers\Api\ListHasItemController@update']);
+
 });
 
 

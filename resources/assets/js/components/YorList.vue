@@ -1,7 +1,7 @@
 <template>
     <div class="container">
         <div class="row">
-            <select v-model="list" :value="listModel">
+        List:   <select v-model="list" :value="listModel">
                 <option v-for="listModel in lists" :value="listModel">
                     {{ listModel.created_at }}
                 </option>
@@ -48,7 +48,7 @@
 
                 this.itemsHasList.push(YorItem.itemHasList);
 
-                this.itemsHasList[this.itemsHasList.length - 1] = YorItem;
+                this.itemsHasList[this.itemsHasList.length - 1] = {};
 
                 this.itemsHasList[this.itemsHasList.length - 1].idListHasItems = null;
 
@@ -60,11 +60,12 @@
 
                 this.itemsHasList[this.itemsHasList.length - 1].items_idItem = 0;
 
-                this.itemsHasList[this.itemsHasList.length - 1].isInCart = -1;
+                this.itemsHasList[this.itemsHasList.length - 1].isInCart = 0;
 
                 this.itemsHasList[this.itemsHasList.length - 1].subTotal = 0;
 
-                this.itemsHasList[this.itemsHasList.length - 1].unit = 0;
+                this.itemsHasList[this.itemsHasList.length - 1].unit = 'unid';
+
             },
 
             removeItemFromList: function (item, index) {
@@ -76,12 +77,12 @@
                     this.itemsHasList.splice(index, 1);
 
                 }, response => {
-                    console.log(response.body);
+                    console.log(response.statusText);
                 });
             },
 
             saveList: function () {
-
+                console.log(this.itemsHasList);
                 this.$http.put('api/listhasitems',
                         {data: this.itemsHasList}
                 ).then(response => {
@@ -91,7 +92,7 @@
                     console.log(this.listModel);
 
                 }, response => {
-                    console.log(response.body);
+                    console.log(response.statusText);
                 });
             },
 
@@ -101,7 +102,7 @@
                     this.lists = response.body;
 
                 }, response => {
-                    console.log(response.body);
+                    console.log(response.statusText);
                 });
             },
 
@@ -111,7 +112,7 @@
                     this.getLists();
 
                 }, response => {
-                    console.log(response.body);
+                    console.log(response.statusText);
                 });
             },
 
@@ -122,7 +123,7 @@
                     this.getLists();
 
                 }, response => {
-                    console.log(response.body);
+                    console.log(response.statusText);
                 });
             },
 
@@ -137,17 +138,26 @@
 
                     this.listModel = selected;
 
+                    var totalPrice = 0;
+
+                    this.itemsHasList.forEach(function (item) {
+
+                        totalPrice += item.subTotal;
+
+                    });
+
+                    this.list.totalPrice = totalPrice;
 
                 }, response => {
-                    console.log(response.body);
+                    console.log(response.statusText);
                 });
             }
         },
 
         mounted() {
             this.getLists();
-        },
 
+        },
 
 
     }
