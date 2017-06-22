@@ -1,6 +1,7 @@
 <template>
     <div class="container">
-        <div class="row">
+
+        <form @submit.prevent="saveList" class="row" >
         List:   <select v-model="list" :value="listModel">
                 <option v-for="listModel in lists" :value="listModel">
                     {{ listModel.created_at }}
@@ -11,13 +12,14 @@
             <button @click="createNewList()">Create New List</button>
             <button @click="deleteList()">Delete List</button>
 
-            <span v-for="(item,index) in itemsHasList">
+            <span  v-for="(item,index) in itemsHasList">
                 <yor-item v-bind:itemHasList="item"></yor-item>  <button @click="removeItemFromList(item,index)">Remove Item From List</button>
 
             </span>
-            <button @click="addItemInList()">Add New Item In List</button>
-            <button @click="saveList()">Save List</button>
-        </div>
+            <button @click.submit.prevent="addItemInList()">Add New Item In List</button>
+            <input  v-show="validateItem" type="submit" value="Save List"/>
+        </form>
+
     </div>
 </template>
 
@@ -39,6 +41,7 @@
                 listModel: {},
                 itemsHasList: [],
                 selected: {},
+                validateItem:false,
 
             }
         },
@@ -46,7 +49,7 @@
         methods: {
             addItemInList: function () {
 
-                this.itemsHasList.push(YorItem.itemHasList);
+                this.itemsHasList.push({});
 
                 this.itemsHasList[this.itemsHasList.length - 1] = {};
 
@@ -56,16 +59,17 @@
 
                 this.itemsHasList[this.itemsHasList.length - 1].price = 0;
 
-                this.itemsHasList[this.itemsHasList.length - 1].qtd = 0;
+                this.itemsHasList[this.itemsHasList.length - 1].qtd = 1;
 
-                this.itemsHasList[this.itemsHasList.length - 1].items_idItem = 0;
+                this.itemsHasList[this.itemsHasList.length - 1].items_idItem = '';
 
                 this.itemsHasList[this.itemsHasList.length - 1].isInCart = 0;
 
                 this.itemsHasList[this.itemsHasList.length - 1].subTotal = 0;
 
-                this.itemsHasList[this.itemsHasList.length - 1].unit = 'unid';
+                this.itemsHasList[this.itemsHasList.length - 1].unit = '';
 
+                this.validateItem = false;
             },
 
             removeItemFromList: function (item, index) {
@@ -82,8 +86,31 @@
             },
 
             saveList: function () {
-                console.log(this.itemsHasList);
-                this.$http.put('api/listhasitems',
+
+                console.log(this.validateItem);
+                if(this.validateItem){
+                    this.$http.put('api/listhasitems',
+                            {data: this.itemsHasList}
+                    ).then(response => {
+
+                        this.listModel = this.list;
+                        this.itemsHasList = response.body;
+                        console.log(this.listModel);
+
+                    }, response => {
+                        console.log(response.statusText);
+                    });
+                }
+
+                /*this.$validator.validateAll().then(() => {
+                    // eslint-disable-next-line
+                    alert('From Submitted!');
+                }).catch(() => {
+                    // eslint-disable-next-line
+                    alert('Correct them errors!');
+                });*/
+//                this.$emit('saveList');
+                /*this.$http.put('api/listhasitems',
                         {data: this.itemsHasList}
                 ).then(response => {
 
@@ -93,7 +120,7 @@
 
                 }, response => {
                     console.log(response.statusText);
-                });
+                });*/
             },
 
             getLists: function () {
@@ -147,6 +174,7 @@
                     });
 
                     this.list.totalPrice = totalPrice;
+                    this.validateItem = false;
 
                 }, response => {
                     console.log(response.statusText);

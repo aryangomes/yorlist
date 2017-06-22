@@ -24,6 +24,7 @@
     "node-sass": "^4.5.2",
     "sass-loader": "^6.0.3",
     "scss-loader": "0.0.1",
+    "vee-validate": "^2.0.0-rc.5",
     "vue-material": "^0.7.1",
     "vue-style-loader": "^3.0.1",
     "vuejs-datepicker": "^0.7.11",

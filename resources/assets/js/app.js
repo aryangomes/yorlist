@@ -13,6 +13,9 @@ import YorList from './components/YorList.vue';
 import YorItem from './components/YorItem.vue';
 Vue.use(require('vue-resource'));
 Vue.http.options.emulateJSON = true;
+import VeeValidate from 'vee-validate';
+
+Vue.use(VeeValidate);
 /**
  * Next, we will create a fresh Vue application instance and attach it to
  * the page. Then, you may begin adding components to this application
