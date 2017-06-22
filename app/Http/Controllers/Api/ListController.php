@@ -54,7 +54,7 @@ class ListController extends Controller
 
         try {
 
-            $list->create(['user_id' =>
+            $list = $list->create(['user_id' =>
                 Auth::id()]);
 
             ListModel::$ID_LIST_CURRENT = $list->idList;
@@ -220,41 +220,41 @@ class ListController extends Controller
      */
     public function updateItemInList(Request $request)
     {
-            dd($request->all()['data']);
-          $listHasItem = ListHasItems::where('idListHasItems', $request->all()['idListHasItems'])
-              ->first();
+        dd($request->all()['data']);
+        $listHasItem = ListHasItems::where('idListHasItems', $request->all()['idListHasItems'])
+            ->first();
 
-          if (!isset($listHasItem)) {
-              return response()->json([
-                  'message' => 'Record not found',
-              ], 404);
-          }
+        if (!isset($listHasItem)) {
+            return response()->json([
+                'message' => 'Record not found',
+            ], 404);
+        }
 
-          $subTotal = ListHasItems::calculateSubTotal($request->all()['price'], $request->all()['qtd']);
+        $subTotal = ListHasItems::calculateSubTotal($request->all()['price'], $request->all()['qtd']);
 
-          $request->merge(['subTotal' => $subTotal]);
+        $request->merge(['subTotal' => $subTotal]);
 
-          if ($listHasItem->subTotal < $subTotal) {
+        if ($listHasItem->subTotal < $subTotal) {
 
-              $diferenca = $subTotal - $listHasItem->subTotal;
+            $diferenca = $subTotal - $listHasItem->subTotal;
 
-              $listHasItem->getList->calculateTotalPrice($diferenca, ListModel::$OPERATOR_SUM);
+            $listHasItem->getList->calculateTotalPrice($diferenca, ListModel::$OPERATOR_SUM);
 
-          } else {
+        } else {
 
-              $diferenca = $listHasItem->subTotal - $subTotal;
+            $diferenca = $listHasItem->subTotal - $subTotal;
 
-              $listHasItem->getList->calculateTotalPrice($diferenca, ListModel::$OPERATOR_SUBTRACT);
+            $listHasItem->getList->calculateTotalPrice($diferenca, ListModel::$OPERATOR_SUBTRACT);
 
-          }
+        }
 
-          $listHasItem->update($request->all());
+        $listHasItem->update($request->all());
 
-          $listHasItem->save();
+        $listHasItem->save();
 
-          return response()->json([
-              'message' => 'Item update in list!',
-          ], 201);
+        return response()->json([
+            'message' => 'Item update in list!',
+        ], 201);
     }
 
 
@@ -327,9 +327,9 @@ class ListController extends Controller
         }
 
         $items = [];
-        foreach ($listHasItems as $item){
+        foreach ($listHasItems as $item) {
 
-            array_push($items,$item->item);
+            array_push($items, $item->item);
 
             $list = $item->getList;
         }

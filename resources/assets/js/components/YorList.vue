@@ -1,8 +1,12 @@
 <template>
     <div class="container">
 
-        <form @submit.prevent="saveList" class="row" >
-        List:   <select v-model="list" :value="listModel">
+        <form @submit.prevent="saveList" class="row">
+            List:
+            <select @change="changeList(list)" v-model="list" :value="listModel">
+                <option value="">
+                    Select a list...
+                </option>
                 <option v-for="listModel in lists" :value="listModel">
                     {{ listModel.created_at }}
                 </option>
@@ -10,14 +14,14 @@
             <span>Price Total: {{ listModel.totalPrice }}</span>
 
             <button @click="createNewList()">Create New List</button>
-            <button @click="deleteList()">Delete List</button>
+            <button v-if="list" @click="deleteList()">Delete List</button>
 
-            <span  v-for="(item,index) in itemsHasList">
+            <span v-for="(item,index) in itemsHasList">
                 <yor-item v-bind:itemHasList="item"></yor-item>  <button @click="removeItemFromList(item,index)">Remove Item From List</button>
 
             </span>
-            <button @click.submit.prevent="addItemInList()">Add New Item In List</button>
-            <input  v-show="validateItem" type="submit" value="Save List"/>
+            <button v-if="list" @click.submit.prevent="addItemInList()">Add New Item In List</button>
+            <input v-show="validateItem" type="submit" value="Save List"/>
         </form>
 
     </div>
@@ -37,11 +41,11 @@
         data: function () {
             return {
                 lists: [],
-                list: {},
-                listModel: {},
+                list: '',
+                listModel: '',
                 itemsHasList: [],
                 selected: {},
-                validateItem:false,
+                validateItem: false,
 
             }
         },
@@ -88,7 +92,7 @@
             saveList: function () {
 
                 console.log(this.validateItem);
-                if(this.validateItem){
+                if (this.validateItem) {
                     this.$http.put('api/listhasitems',
                             {data: this.itemsHasList}
                     ).then(response => {
@@ -102,25 +106,6 @@
                     });
                 }
 
-                /*this.$validator.validateAll().then(() => {
-                    // eslint-disable-next-line
-                    alert('From Submitted!');
-                }).catch(() => {
-                    // eslint-disable-next-line
-                    alert('Correct them errors!');
-                });*/
-//                this.$emit('saveList');
-                /*this.$http.put('api/listhasitems',
-                        {data: this.itemsHasList}
-                ).then(response => {
-
-                    this.listModel = this.list;
-                    this.itemsHasList = response.body;
-                    console.log(this.listModel);
-
-                }, response => {
-                    console.log(response.statusText);
-                });*/
             },
 
             getLists: function () {
@@ -136,7 +121,12 @@
             createNewList: function () {
                 this.$http.post('api/lists').then(response => {
 
-                    this.getLists();
+                    this.lists.unshift(response.body);
+
+                    this.list = this.lists[0];
+
+                    console.log(this.listModel);
+
 
                 }, response => {
                     console.log(response.statusText);
@@ -144,43 +134,53 @@
             },
 
             deleteList: function () {
-                console.log(this.listModel.idList);
-                this.$http.delete('api/lists/' + this.listModel.idList).then(response => {
+                if (this.listModel.idList != undefined) {
+                    this.$http.delete('api/lists/' + this.listModel.idList).then(response => {
 
-                    this.getLists();
+                        this.getLists();
 
-                }, response => {
-                    console.log(response.statusText);
-                });
+                    }, response => {
+                        console.log(response.statusText);
+                    });
+                }
             },
 
+            changeList: function (listSelected) {
+                console.log(listSelected);
+                if (this.list != '') {
 
-        },
+                    this.$http.get('api/lists/' + this.list.idList + '/items').then(response => {
 
-        watch: {
-            list: function (selected) {
-                this.$http.get('api/lists/' + selected.idList + '/items').then(response => {
+                        this.itemsHasList = response.body;
 
-                    this.itemsHasList = response.body;
+                        this.listModel = this.list;
 
-                    this.listModel = selected;
+                        var totalPrice = 0;
 
-                    var totalPrice = 0;
+                        this.itemsHasList.forEach(function (item) {
 
-                    this.itemsHasList.forEach(function (item) {
+                            totalPrice += item.subTotal;
 
-                        totalPrice += item.subTotal;
+                        });
 
+                        this.list.totalPrice = totalPrice;
+
+                        this.validateItem = false;
+
+                    }, response => {
+                        console.log(response.statusText);
                     });
+                } else {
+                    this.listModel.totalPrice = 0;
 
-                    this.list.totalPrice = totalPrice;
-                    this.validateItem = false;
-
-                }, response => {
-                    console.log(response.statusText);
-                });
+                    this.itemsHasList = null;
+                }
             }
+
+
         },
+
+        watch: {},
 
         mounted() {
             this.getLists();
