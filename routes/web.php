@@ -30,6 +30,7 @@ Route::prefix('api')->group(function () {
     //List
 
     Route::get('lists/{id}/items', '\App\Http\Controllers\Api\ListController@items');
+    Route::post('lists/clonelist', '\App\Http\Controllers\Api\ListController@cloneList');
 
     //ListHasItem
 

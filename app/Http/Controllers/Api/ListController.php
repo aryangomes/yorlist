@@ -193,7 +193,7 @@ class ListController extends Controller
     public function removeItem(Request $request)
     {
 
-        $listHasItem = ListHasItems::where('idListHasItems', $request->all()['data']['idListHasItems'])
+        $listHasItem = ListHasItems::where('idListHasItems', $request->all()['idListHasItems'])
             ->first();
 
         if (!isset($listHasItem)) {
@@ -213,49 +213,6 @@ class ListController extends Controller
         ], 201);
     }
 
-    /**
-     * Update a item from a list
-     * @param ListHasItemRequest $request
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function updateItemInList(Request $request)
-    {
-        dd($request->all()['data']);
-        $listHasItem = ListHasItems::where('idListHasItems', $request->all()['idListHasItems'])
-            ->first();
-
-        if (!isset($listHasItem)) {
-            return response()->json([
-                'message' => 'Record not found',
-            ], 404);
-        }
-
-        $subTotal = ListHasItems::calculateSubTotal($request->all()['price'], $request->all()['qtd']);
-
-        $request->merge(['subTotal' => $subTotal]);
-
-        if ($listHasItem->subTotal < $subTotal) {
-
-            $diferenca = $subTotal - $listHasItem->subTotal;
-
-            $listHasItem->getList->calculateTotalPrice($diferenca, ListModel::$OPERATOR_SUM);
-
-        } else {
-
-            $diferenca = $listHasItem->subTotal - $subTotal;
-
-            $listHasItem->getList->calculateTotalPrice($diferenca, ListModel::$OPERATOR_SUBTRACT);
-
-        }
-
-        $listHasItem->update($request->all());
-
-        $listHasItem->save();
-
-        return response()->json([
-            'message' => 'Item update in list!',
-        ], 201);
-    }
 
 
     /**
@@ -266,7 +223,7 @@ class ListController extends Controller
     public function cloneList(Request $request)
     {
 
-        $list = ListModel::where('idList', $request->id)->first();
+        $list = ListModel::where('idList', $request->all()['idList'])->first();
 
         if (!isset($list)) {
             return response()->json([

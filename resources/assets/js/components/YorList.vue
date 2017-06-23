@@ -14,6 +14,9 @@
             <span>Price Total: {{ listModel.totalPrice }}</span>
 
             <button @click="createNewList()">Create New List</button>
+
+            <button v-if="list" @click="cloneList()">Clone List</button>
+
             <button v-if="list" @click="deleteList()">Delete List</button>
 
             <span v-for="(item,index) in itemsHasList">
@@ -85,7 +88,7 @@
             removeItemFromList: function (item, index) {
 
                 this.$http.post('api/lists/removeitem',
-                        {data: item}
+                        item
                 ).then(response => {
 
                     this.itemsHasList.splice(index, 1);
@@ -195,6 +198,24 @@
 
                     this.itemsHasList = null;
                 }
+            },
+
+            cloneList:function () {
+                console.log(this.list);
+
+                this.$http.post('api/lists/clonelist',
+                       this.list).then(response => {
+
+                    console.log(response.body);
+
+                    this.lists.unshift(response.body);
+
+                    this.list = this.lists[0];
+                    this.changeList(this.list);
+
+                }, response => {
+                    console.log(response.statusText);
+                });
             }
 
 
