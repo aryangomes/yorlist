@@ -53,6 +53,10 @@
         methods: {
             addItemInList: function () {
 
+                if(this.itemsHasList == null){
+                    this.itemsHasList = [];
+                }
+
                 this.itemsHasList.push({});
 
                 this.itemsHasList[this.itemsHasList.length - 1] = {};
@@ -74,6 +78,8 @@
                 this.itemsHasList[this.itemsHasList.length - 1].unit = '';
 
                 this.validateItem = false;
+
+
             },
 
             removeItemFromList: function (item, index) {
@@ -91,15 +97,14 @@
 
             saveList: function () {
 
-                console.log(this.validateItem);
                 if (this.validateItem) {
                     this.$http.put('api/listhasitems',
                             {data: this.itemsHasList}
                     ).then(response => {
 
                         this.listModel = this.list;
+
                         this.itemsHasList = response.body;
-                        console.log(this.listModel);
 
                     }, response => {
                         console.log(response.statusText);
@@ -125,8 +130,7 @@
 
                     this.list = this.lists[0];
 
-                    console.log(this.listModel);
-
+                    this.changeList(this.list);
 
                 }, response => {
                     console.log(response.statusText);
@@ -135,9 +139,16 @@
 
             deleteList: function () {
                 if (this.listModel.idList != undefined) {
+
                     this.$http.delete('api/lists/' + this.listModel.idList).then(response => {
 
                         this.getLists();
+
+                        this.list ="";
+
+                        this.changeList("");
+
+                        this.validateItem =false;
 
                     }, response => {
                         console.log(response.statusText);
@@ -146,8 +157,8 @@
             },
 
             changeList: function (listSelected) {
-                console.log(listSelected);
-                if (this.list != '') {
+
+                if (this.list != '' && this.list != "") {
 
                     this.$http.get('api/lists/' + this.list.idList + '/items').then(response => {
 
@@ -157,15 +168,24 @@
 
                         var totalPrice = 0;
 
-                        this.itemsHasList.forEach(function (item) {
+                        if(this.itemsHasList.length > 0){
+                            this.itemsHasList.forEach(function (item) {
 
-                            totalPrice += item.subTotal;
+                                totalPrice += item.subTotal;
 
-                        });
+                            });
+
+                            this.validateItem = false;
+                        }else{
+                            this.addItemInList();
+                        }
+
 
                         this.list.totalPrice = totalPrice;
 
-                        this.validateItem = false;
+
+
+
 
                     }, response => {
                         console.log(response.statusText);
