@@ -8,7 +8,7 @@
                     Select a list...
                 </option>
                 <option v-for="listModel in lists" :value="listModel">
-                    {{ listModel.created_at }}
+                    {{ listModel.created_at  }}
                 </option>
             </select>
             <span>Price Total: {{ listModel.totalPrice }}</span>
@@ -32,6 +32,10 @@
 
 <script>
     import YorItem from './YorItem.vue'
+    function dateFormatted(date) {
+        let dateFormatted = new Date(date);
+        return  dateFormatted.getDate() + '/' + (dateFormatted.getMonth() + 1) + '/' + dateFormatted.getFullYear();
+    }
     export default {
         name: 'yor-list',
 
@@ -121,6 +125,10 @@
 
                     this.lists = response.body;
 
+                    this.lists.forEach(function (item,index) {
+                        item.created_at =dateFormatted(item.created_at);
+                    });
+
                 }, response => {
                     console.log(response.statusText);
                 });
@@ -134,6 +142,8 @@
                     this.list = this.lists[0];
 
                     this.changeList(this.list);
+
+                    this.list.created_at = dateFormatted(this.list.created_at);
 
                 }, response => {
                     console.log(response.statusText);
@@ -211,7 +221,10 @@
                     this.lists.unshift(response.body);
 
                     this.list = this.lists[0];
+
                     this.changeList(this.list);
+
+                    this.list.created_at = dateFormatted(this.list.created_at);
 
                 }, response => {
                     console.log(response.statusText);
@@ -226,8 +239,9 @@
         mounted() {
             this.getLists();
 
-        },
 
+
+        },
 
     }
 
