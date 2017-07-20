@@ -36,6 +36,9 @@
         let dateFormatted = new Date(date);
         return  dateFormatted.getDate() + '/' + (dateFormatted.getMonth() + 1) + '/' + dateFormatted.getFullYear();
     }
+
+
+
     export default {
         name: 'yor-list',
 
@@ -53,6 +56,8 @@
                 itemsHasList: [],
                 selected: {},
                 validateItem: false,
+                itemsSelecteds: [],
+                itemsAux:'',
 
             }
         },
@@ -85,6 +90,15 @@
                 this.itemsHasList[this.itemsHasList.length - 1].unit = '';
 
                 this.validateItem = false;
+
+                var aux = [];
+
+                this.itemsHasList.forEach(function (item,index) {
+
+                    aux.push(item.items_idItem);
+                });
+
+                this.itemsSelecteds =aux;
 
 
             },
@@ -193,6 +207,16 @@
                             this.addItemInList();
                         }
 
+                        var aux = [];
+
+                        this.itemsHasList.forEach(function (item,index) {
+                            aux.push(item.items_idItem);
+                        });
+
+                        this.itemsSelecteds =aux;
+
+                        console.log('this.itemsSelecteds: '+this.itemsSelecteds);
+
 
                         this.list.totalPrice = totalPrice;
 
@@ -225,6 +249,8 @@
                     this.changeList(this.list);
 
                     this.list.created_at = dateFormatted(this.list.created_at);
+
+
 
                 }, response => {
                     console.log(response.statusText);

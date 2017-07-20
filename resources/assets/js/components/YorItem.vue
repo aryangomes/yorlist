@@ -1,8 +1,9 @@
 <template>
 
     <li class="container">
+        {{chooseneds}}
        Item:
-        <select @change="validateItem()"   v-model="itemHasList.items_idItem" v-validate="'required'" data-vv-name="itemHasList.items_idItem" data-vv-value-path="itemHasList.items_idItem">
+        <select @change="validateItem()"  v-model="itemHasList.items_idItem" v-validate="{ rules: { required: true , not_in: chooseneds } }" data-vv-name="itemHasList.items_idItem" data-vv-value-path="itemHasList.items_idItem">
              <option value="">
                 Select a item
             </option>
@@ -92,6 +93,8 @@
                 items: [],
                 list: {},
                 qtd: 0,
+                chooseneds:[],
+
 
 
             }
@@ -130,14 +133,32 @@
 
         },
 
+        computed:{
+
+
+        },
+
+        watch: {
+
+        },
         mounted() {
+
+
             this.$http.get('api/items').then(response => {
 
                 this.items = response.body;
 
+
             }, response => {
                 console.log('error');
             });
+
+            this.chooseneds = this.$parent.itemsSelecteds.slice();
+
+            this.chooseneds.splice(this.chooseneds.indexOf(this.itemHasList.items_idItem),1);
+
+            console.log('this.chooseneds: '+ this.chooseneds);
+
         },
 
 
